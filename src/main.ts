@@ -1,8 +1,8 @@
-import nodes from './nodes'
+import { nodes, plazas, size } from './nodes'
 import { lerp } from './utils'
 import Walker from './Walker'
 
-window.addEventListener('click', () => {
+window.addEventListener('dblclick', () => {
   if (document.body.requestFullscreen) {
     document.body.requestFullscreen()
   }
@@ -20,8 +20,8 @@ Object.entries(colors).forEach(([name, color]) => document.body.style.setPropert
 
 // parameters
 const scl = 4
-const width = 573 * scl
-const height = 520 * scl
+const width = size[0] * scl
+const height = size[1] * scl
 
 // Main elements
 const wrapper = document.querySelector('#wrapper') as HTMLElement
@@ -101,6 +101,12 @@ walkers.forEach(({ walker, btn }, i) => {
   })
 })
 
+wrapper.addEventListener('click', e => {
+  if ((e.target as HTMLElement).tagName.toLowerCase() !== 'button') {
+    walkers.forEach(w => { w.selected = false })
+  }
+})
+
 layers.map.lineCap = 'round'
 layers.map.lineJoin = 'round'
 layers.walkers.lineCap = 'square'
@@ -128,6 +134,17 @@ nodes.forEach((node, i) => {
       selected.walker.goTo(i)
     }
   })
+})
+
+plazas.forEach(plaza => {
+  layers.map.fillStyle = colors.low
+  layers.map.beginPath()
+  plaza.forEach((pt, i) => {
+    if (i === 0) layers.map.moveTo(nodes[pt].x * scl, nodes[pt].y * scl)
+    else layers.map.lineTo(nodes[pt].x * scl, nodes[pt].y * scl)
+  })
+  layers.map.closePath()
+  layers.map.fill()
 })
 
 function animate () {

@@ -16,7 +16,7 @@ export default class Walker {
 
   public goTo (nodeIndex: number) {
     let path = this.findShortestPath(this.nextNodeIndex, nodeIndex).path
-    if (path[0] !== this.actualNodeIndex) path = [this.actualNodeIndex, ...this.findShortestPath(this.nextNodeIndex, nodeIndex).path]
+    if (path[0] !== this.actualNodeIndex) path = [this.actualNodeIndex, ...path]
     this.path = path
     this.nextNodeIndex = this.path[1]
     this.isMoving = true
