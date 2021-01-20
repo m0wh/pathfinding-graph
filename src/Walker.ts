@@ -1,3 +1,5 @@
+import { nodes } from './data/simple'
+
 export default class Walker {
   private graph
   public actualNodeIndex: number
@@ -7,11 +9,11 @@ export default class Walker {
   public segmentProgression: number = 0
   public isMoving: boolean = false
 
-  constructor (graph, startNodeIndex: number, speed: number = 10) {
+  constructor (startNodeIndex: number, speed: number = 10) {
     this.speed = speed
     this.actualNodeIndex = startNodeIndex
     this.nextNodeIndex = this.actualNodeIndex
-    this.graph = Object.assign({}, graph.map(node => node.relations))
+    this.graph = Object.assign({}, nodes.map(node => node.relations))
   }
 
   public goTo (nodeIndex: number) {
