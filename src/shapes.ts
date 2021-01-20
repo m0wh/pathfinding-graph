@@ -31,7 +31,7 @@ export function drawRoads (ctx, actionsWrapper, people) {
     btn.addEventListener('click', () => {
       const selected = people.filter(w => w.selected)[0]
       if (selected) {
-        selected.citizen.walker.goTo(i)
+        selected.citizen.sendTo(i)
       }
     })
   })

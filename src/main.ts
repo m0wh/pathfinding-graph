@@ -2,7 +2,7 @@ import { nodes, plazas, size } from './data/simple'
 import { lerp } from './utils'
 import { generateRandomCitizen, randomNode } from './Citizen'
 import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo } from './shapes'
-import { citizenColors, scl, populationSize, colors, antiColors, citizenAntiColors } from './data/global'
+import { citizenColors, scl, populationSize, colors, citizenAntiColors } from './data/global'
 
 window.addEventListener('dblclick', () => {
   if (document.body.requestFullscreen) {
@@ -121,7 +121,12 @@ function loop () {
       }, Math.random() * 5000)
     }
 
-    citizen.walker.step()
+    const changed = citizen.step()
+    if (changed && selected) {
+      drawSelectedInfo({ citizen, tracked })
+      btn.style.setProperty('--self-color', citizenColors[citizen.status.code])
+      btn.style.setProperty('--self-anti-color', citizenAntiColors[citizen.status.code])
+    }
 
     const x = Math.round(lerp(nodes[citizen.walker.actualNodeIndex].x, nodes[citizen.walker.nextNodeIndex]?.x || nodes[citizen.walker.actualNodeIndex].x, citizen.walker.segmentProgression) * scl)
     const y = Math.round(lerp(nodes[citizen.walker.actualNodeIndex].y, nodes[citizen.walker.nextNodeIndex]?.y || nodes[citizen.walker.actualNodeIndex].y, citizen.walker.segmentProgression) * scl)
