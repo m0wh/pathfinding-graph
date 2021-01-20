@@ -19,5 +19,3 @@ export const citizenColors = [
   colors.yellow,
   colors.red
 ]
-
-Object.entries(colors).forEach(([name, color]) => document.body.style.setProperty(`--color-${name}`, color))

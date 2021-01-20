@@ -1,7 +1,9 @@
-export const size = [573, 520]
+export const size = [650, 520]
+
 export const plazas = [
   [23, 22, 24, 28, 42, 41, 36, 35]
 ]
+
 export const nodes = [
   { x: 32, y: 512, relations: { 1: 48.76474136094644, 11: 62.36184731067546 } },
   { x: 79, y: 499, relations: { 0: 48.76474136094644, 2: 68.24954212300622, 10: 59.682493245507096 } },

@@ -56,3 +56,30 @@ export function drawCitizen (ctx, citizen, x, y) {
   ctx.closePath()
   ctx.fill()
 }
+
+const selectedInfoFields = {
+  name: document.querySelector('#citizen-info span.name'),
+  age: document.querySelector('#citizen-info span.age'),
+  gender: document.querySelector('#citizen-info span.gender'),
+  race: document.querySelector('#citizen-info span.race'),
+  religion: document.querySelector('#citizen-info span.religion'),
+  score: document.querySelector('#citizen-info span.score'),
+  version: document.querySelector('#citizen-info span.version'),
+  security: document.querySelector('#citizen-info span.security'),
+  integrity: document.querySelector('#citizen-info span.integrity'),
+  status: document.querySelector('#citizen-info span.status')
+}
+
+export function drawSelectedInfo (citizen) {
+  selectedInfoFields.name.textContent = citizen.identity.firstName + ' ' + citizen.identity.lastName
+  selectedInfoFields.age.textContent = citizen.identity.age
+  selectedInfoFields.gender.textContent = citizen.identity.gender
+  selectedInfoFields.race.textContent = citizen.identity.race
+  selectedInfoFields.religion.textContent = citizen.identity.religion
+  selectedInfoFields.score.textContent = Math.round(citizen.identity.score * 100) + '%'
+  selectedInfoFields.version.textContent = citizen.device.firmware.toString()
+  selectedInfoFields.version.textContent = citizen.device.firmware.toString().slice(0, 2) + '.' + citizen.device.firmware.toString().slice(2, 3) + '.' + citizen.device.firmware.toString().slice(3)
+  selectedInfoFields.security.textContent = Math.round(citizen.device.security * 100) + '%'
+  selectedInfoFields.integrity.textContent = Math.round(citizen.device.integrity * 100) + '%'
+  selectedInfoFields.status.textContent = citizen.status.name
+}

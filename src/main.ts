@@ -1,14 +1,17 @@
 import { nodes, plazas, size } from './data/simple'
 import { lerp } from './utils'
 import { generateRandomCitizen, randomNode } from './Citizen'
-import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads } from './shapes'
-import { citizenColors, scl, populationSize } from './data/global'
+import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo } from './shapes'
+import { citizenColors, scl, populationSize, colors } from './data/global'
 
 window.addEventListener('dblclick', () => {
   if (document.body.requestFullscreen) {
     document.body.requestFullscreen()
   }
 })
+
+Object.entries(colors).forEach(([name, color]) => document.body.style.setProperty(`--color-${name}`, color))
+document.body.style.setProperty('--selected-color', colors.white)
 
 // Parameters
 const width = size[0] * scl
@@ -51,16 +54,22 @@ layers.people.lineJoin = 'round'
 const people = []
 
 function setSelect (i: number, value: boolean) {
+  wrapper.style.setProperty('--translateX', value ? '-56%' : '-50%')
+  document.querySelector('#citizen-info').classList.toggle('show', value)
+
   if (value) {
     people.forEach((c, a) => {
       c.selected = i === a
       if (i === a) c.btn.classList.add('active')
       else c.btn.classList.remove('active')
     })
+    document.body.style.setProperty('--selected-color', citizenColors[people[i].citizen.status.code])
+    drawSelectedInfo(people[i].citizen)
     document.querySelectorAll('button.node').forEach(b => { (b as HTMLElement).classList.add('show') })
   } else {
     people[i].selected = false
     people[i].btn.classList.remove('active')
+    document.body.style.setProperty('--selected-color', colors.white)
     document.querySelectorAll('button.node').forEach(b => { (b as HTMLElement).classList.remove('show') })
   }
 }
@@ -77,8 +86,6 @@ for (let i = 0; i < populationSize; i++) {
   people.push({ citizen, selected: false, btn })
 
   btn.addEventListener('click', () => {
-    console.table(citizen.identity)
-    console.log(citizen.status.name)
     setSelect(i, !people[i].selected) // if clicked citizen is not selected
   })
 }

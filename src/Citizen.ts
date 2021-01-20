@@ -36,9 +36,9 @@ export class Citizen {
       { code: 0, name: 'OK' },
       { code: 1, name: 'Check hardware' },
       { code: 2, name: 'Vulnerable' },
-      { code: 3, name: 'Hack target' },
+      { code: 3, name: 'Infected' },
       { code: 4, name: 'Independent' },
-      { code: 5, name: 'Terrorist' }
+      { code: 5, name: 'Public enemy' }
     ]
 
     const publicEnemy = this.identity.score < 20
