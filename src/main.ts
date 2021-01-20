@@ -2,7 +2,7 @@ import { nodes, plazas, size } from './data/simple'
 import { lerp } from './utils'
 import { generateRandomCitizen, randomNode } from './Citizen'
 import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo } from './shapes'
-import { citizenColors, scl, populationSize, colors } from './data/global'
+import { citizenColors, scl, populationSize, colors, antiColors, citizenAntiColors } from './data/global'
 
 window.addEventListener('dblclick', () => {
   if (document.body.requestFullscreen) {
@@ -64,7 +64,7 @@ function setSelect (i: number, value: boolean) {
       else c.btn.classList.remove('active')
     })
     document.body.style.setProperty('--selected-color', citizenColors[people[i].citizen.status.code])
-    drawSelectedInfo(people[i].citizen)
+    drawSelectedInfo(people[i])
     document.querySelectorAll('button.node').forEach(b => { (b as HTMLElement).classList.add('show') })
   } else {
     people[i].selected = false
@@ -81,14 +81,23 @@ for (let i = 0; i < populationSize; i++) {
   const btn = document.createElement('button')
   btn.classList.add('citizen')
   btn.style.setProperty('--self-color', citizenColors[citizen.status.code])
+  btn.style.setProperty('--self-anti-color', citizenAntiColors[citizen.status.code])
   actionsWrapper.append(btn)
 
-  people.push({ citizen, selected: false, btn })
+  people.push({ citizen, selected: false, btn, tracked: false })
 
   btn.addEventListener('click', () => {
     setSelect(i, !people[i].selected) // if clicked citizen is not selected
   })
 }
+
+const trackBtn = document.querySelector('#citizen-info button.track')
+trackBtn.addEventListener('click', () => {
+  const i = people.findIndex(c => c.selected)
+  people[i].tracked = !people[i].tracked
+  trackBtn.innerHTML = people[i].tracked ? '<i class="material-icons">visibility_off</i> Stop tracking' : '<i class="material-icons">visibility</i> Keep track'
+  people[i].btn.innerHTML = people[i].tracked ? '<i class="material-icons">visibility</i>' : ''
+})
 
 window.addEventListener('click', e => {
   if ((e.target as HTMLElement).tagName.toLowerCase() !== 'button') {
@@ -104,7 +113,7 @@ plazas.forEach(plaza => drawPlaza(layers.map, plaza))
 function loop () {
   layers.people.clearRect(0, 0, width * scl, height * scl)
 
-  people.forEach(({ citizen, selected, btn }) => {
+  people.forEach(({ citizen, selected, tracked, btn }) => {
     if (!citizen.walker.isMoving) { // define new objective
       citizen.walker.isMoving = true
       setTimeout(() => {
@@ -118,8 +127,8 @@ function loop () {
     const y = Math.round(lerp(nodes[citizen.walker.actualNodeIndex].y, nodes[citizen.walker.nextNodeIndex]?.y || nodes[citizen.walker.actualNodeIndex].y, citizen.walker.segmentProgression) * scl)
 
     // PATH
-    if (selected) {
-      drawCitizenPath(layers.people, citizen, x, y)
+    if (selected || tracked) {
+      drawCitizenPath(layers.people, citizen, x, y, selected)
     }
 
     // PEOPLE

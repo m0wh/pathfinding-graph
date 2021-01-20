@@ -37,8 +37,8 @@ export function drawRoads (ctx, actionsWrapper, people) {
   })
 }
 
-export function drawCitizenPath (ctx, citizen, x, y) {
-  ctx.lineWidth = 20
+export function drawCitizenPath (ctx, citizen, x, y, wide) {
+  ctx.lineWidth = wide ? 20 : 5
   ctx.strokeStyle = citizenColors[citizen.status.code]
 
   ctx.beginPath()
@@ -67,10 +67,11 @@ const selectedInfoFields = {
   version: document.querySelector('#citizen-info span.version'),
   security: document.querySelector('#citizen-info span.security'),
   integrity: document.querySelector('#citizen-info span.integrity'),
-  status: document.querySelector('#citizen-info span.status')
+  status: document.querySelector('#citizen-info span.status'),
+  trackBtn: document.querySelector('#citizen-info button.track')
 }
 
-export function drawSelectedInfo (citizen) {
+export function drawSelectedInfo ({ citizen, tracked }) {
   selectedInfoFields.name.textContent = citizen.identity.firstName + ' ' + citizen.identity.lastName
   selectedInfoFields.age.textContent = citizen.identity.age
   selectedInfoFields.gender.textContent = citizen.identity.gender
@@ -82,4 +83,5 @@ export function drawSelectedInfo (citizen) {
   selectedInfoFields.security.textContent = Math.round(citizen.device.security * 100) + '%'
   selectedInfoFields.integrity.textContent = Math.round(citizen.device.integrity * 100) + '%'
   selectedInfoFields.status.textContent = citizen.status.name
+  selectedInfoFields.trackBtn.innerHTML = tracked ? '<i class="material-icons">visibility_off</i> Stop tracking' : '<i class="material-icons">visibility</i> Keep track'
 }

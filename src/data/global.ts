@@ -11,6 +11,14 @@ export const colors = {
   yellow: '#FDDB3A'
 }
 
+export const antiColors = {
+  white: '#393D42',
+  black: '#393D42',
+  gray: '#F6F4E6',
+  red: '#26272B',
+  yellow: '#393D42'
+}
+
 export const citizenColors = [
   colors.white,
   colors.white,
@@ -18,4 +26,13 @@ export const citizenColors = [
   colors.yellow,
   colors.yellow,
   colors.red
+]
+
+export const citizenAntiColors = [
+  antiColors.white,
+  antiColors.white,
+  antiColors.white,
+  antiColors.yellow,
+  antiColors.yellow,
+  antiColors.red
 ]

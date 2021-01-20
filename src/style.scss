@@ -67,6 +67,24 @@ body {
           }
         }
       }
+
+      .track {
+        color: currentColor;
+        font-size: 20px;
+        background: none;
+        border: none;
+        font-family: 'Blender Pro';
+        text-transform: uppercase;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+
+        i {
+          margin-right: 10px;
+          font-size: 20px;
+        }
+      }
     }
   }
 
@@ -106,6 +124,13 @@ body {
           cursor: pointer;
           background: none;
           z-index: 10;
+          color: var(--self-anti-color);
+
+          i {
+            font-size: 30px;
+            pointer-events: none;
+            vertical-align: -5px;
+          }
 
           &:hover, &.active {
             border-color: var(--self-color);;
