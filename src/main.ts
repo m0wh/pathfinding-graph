@@ -3,6 +3,7 @@ import { lerp } from './utils'
 import { generateRandomCitizen, randomNode } from './Citizen'
 import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo } from './shapes'
 import { citizenColors, scl, populationSize, colors, citizenAntiColors } from './data/global'
+import playSound from './sounds'
 
 window.addEventListener('dblclick', () => {
   if (document.body.requestFullscreen) {
@@ -58,6 +59,7 @@ function setSelect (i: number, value: boolean) {
   document.querySelector('#citizen-info').classList.toggle('show', value)
 
   if (value) {
+    playSound('select')
     people.forEach((c, a) => {
       c.selected = i === a
       if (i === a) c.btn.classList.add('active')
@@ -110,6 +112,7 @@ drawRoads(layers.map, actionsWrapper, people)
 plazas.forEach(plaza => drawPlaza(layers.map, plaza))
 
 // MAIN LOOP
+let stopLoop = false
 function loop () {
   layers.people.clearRect(0, 0, width * scl, height * scl)
 
@@ -122,10 +125,23 @@ function loop () {
     }
 
     const changed = citizen.step()
-    if (changed && selected) {
-      drawSelectedInfo({ citizen, tracked })
+    if (changed) {
       btn.style.setProperty('--self-color', citizenColors[citizen.status.code])
       btn.style.setProperty('--self-anti-color', citizenAntiColors[citizen.status.code])
+
+      if (selected) {
+        drawSelectedInfo({ citizen, tracked })
+        document.body.style.setProperty('--selected-color', citizenColors[citizen.status.code])
+      }
+
+      if (people.filter(p => !(p.citizen.device.hacked || p.citizen.device.integrity === 0)).length === 0) {
+        playSound('end')
+        document.querySelector('.loader').textContent = 'You have lost control'
+        setTimeout(() => {
+          stopLoop = true
+          document.body.classList.add('waiting')
+        })
+      }
     }
 
     const x = Math.round(lerp(nodes[citizen.walker.actualNodeIndex].x, nodes[citizen.walker.nextNodeIndex]?.x || nodes[citizen.walker.actualNodeIndex].x, citizen.walker.segmentProgression) * scl)
@@ -142,9 +158,11 @@ function loop () {
     btn.style.transform = `translate3d(${x - 45}px,${y - 45}px,0)`
   })
 
-  requestAnimationFrame(loop)
+  if (!stopLoop) requestAnimationFrame(loop)
 }
 
-window.addEventListener('load', () => {
+window.addEventListener('click', () => {
+  playSound('start')
+  document.body.classList.remove('waiting')
   requestAnimationFrame(loop)
-})
+}, { once: true })

@@ -61,6 +61,7 @@ const selectedInfoFields = {
   name: document.querySelector('#citizen-info span.name'),
   age: document.querySelector('#citizen-info span.age'),
   gender: document.querySelector('#citizen-info span.gender'),
+  sexuality: document.querySelector('#citizen-info span.sex'),
   race: document.querySelector('#citizen-info span.race'),
   religion: document.querySelector('#citizen-info span.religion'),
   score: document.querySelector('#citizen-info span.score'),
@@ -75,6 +76,7 @@ export function drawSelectedInfo ({ citizen, tracked }) {
   selectedInfoFields.name.textContent = citizen.identity.firstName + ' ' + citizen.identity.lastName
   selectedInfoFields.age.textContent = citizen.identity.age
   selectedInfoFields.gender.textContent = citizen.identity.gender
+  selectedInfoFields.sexuality.textContent = citizen.identity.sexuality
   selectedInfoFields.race.textContent = citizen.identity.race
   selectedInfoFields.religion.textContent = citizen.identity.religion
   selectedInfoFields.score.textContent = Math.round(citizen.identity.score * 100) + '%'

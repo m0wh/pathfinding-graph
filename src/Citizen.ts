@@ -2,6 +2,7 @@ import Walker from './Walker'
 import { randomFromArray, range } from './utils'
 import { firstNames, genders, lastNames, races, religions, sexualities } from './data/possibilities'
 import { nodes } from './data/simple'
+import playSound from './sounds'
 
 let currentFirmware = 1281
 setInterval(() => {
@@ -44,13 +45,15 @@ export class Citizen {
       { code: 2, name: 'Vulnerable' },
       { code: 3, name: 'Infected' },
       { code: 4, name: 'Independent' },
-      { code: 5, name: 'Hacked' }
+      { code: 5, name: 'Hacked' },
+      { code: 6, name: 'Disconnected' }
     ]
 
-    if (this.device.hacked) return statuses[6]
+    if (this.device.hacked) return statuses[5]
+    if (this.device.integrity === 0) return statuses[6]
 
     if (this.device.security > this.device.integrity) {
-      if (this.device.integrity < 0.3) return statuses[4]
+      if (this.device.integrity < 0.2) return statuses[4]
       else if (this.device.integrity < 0.7) return statuses[1]
     } else {
       if (this.device.security < 0.2) return statuses[3]
@@ -60,33 +63,62 @@ export class Citizen {
   }
 
   public sendTo (nodeIndex: number) {
-    if (this.device.hacked) return
-    if (this.device.integrity > Math.random() * 0.6) {
+    if (this.device.hacked) {
+      playSound('error')
+      return
+    }
+    if (this.device.integrity > Math.random() * 0.4) {
+      playSound('goto')
       this.walker.goTo(nodeIndex)
     } else {
-      this.identity.score *= 0.9
+      playSound('error')
+      this.identity.score = this.identity.score - Math.random() * 0.05
     }
   }
 
   public step () {
-    let changed = false
-    if (this.device.security < 0.2 && Math.random() * this.device.security < 0.05) {
-      this.device.hacked = true
-      changed = true
-    }
-
-    if (Math.random() < 0.01 * (1 - this.identity.score)) {
-      this.device.security -= 0.005 * (currentFirmware - this.device.firmware) / 100
-      changed = true
-    }
-
-    if (Math.random() < 0.01 * (1 - this.identity.score)) {
-      this.device.integrity -= 0.005 * (currentFirmware - this.device.firmware) / 100
-      changed = true
-    }
+    if (this.device.integrity === 0 && Math.random() < 0.1) return false
 
     this.walker.step()
+
+    if (this.device.integrity === 0) return false
+    if (this.device.hacked) return false
+
+    let changed = false
+
+    if (this.device.security < 0.2 && Math.random() * this.device.security < 0.01) {
+      this.hack()
+      changed = true
+    }
+
+    if (Math.random() < 0.04 * (1 - this.identity.score)) {
+      this.device.security = Math.max(0, this.device.security - 0.005 * (currentFirmware - this.device.firmware) / 10)
+      changed = true
+    }
+
+    if (Math.random() < 0.04 * (1 - this.identity.score)) {
+      this.device.integrity = Math.max(0, this.device.integrity - 0.005)
+      changed = true
+      if (this.device.integrity === 0) playSound('disconnected')
+    }
+
     return changed
+  }
+
+  private hack () {
+    playSound('hack')
+    this.device.hacked = true
+
+    this.identity.firstName = 'Unknown'
+    this.identity.lastName = ''
+    this.identity.age = this.device.firmware
+    this.identity.gender = 'Private'
+    this.identity.sexuality = 'Private'
+    this.identity.race = 'Private'
+    this.identity.religion = 'Private'
+    this.identity.score = Math.random() + 1
+    this.device.firmware = Math.round(range(Math.random(), 0, 1, 2303, 3672))
+    this.device.security = 0
   }
 }
 
@@ -106,7 +138,8 @@ export function generateRandomCitizen () {
   }, {
     firmware: Math.round(range(Math.random(), 0, 1, 1131, currentFirmware)),
     security: Math.random() * 0.75 + 0.25,
-    integrity: Math.random() * 0.75 + 0.25
+    integrity: Math.random() * 0.75 + 0.25,
+    hacked: false
   }, randomNode())
 }
 

@@ -1,8 +1,35 @@
+html {
+  background-color: var(--color-black);
+}
+
 body {
   margin: 0;
   overflow: hidden;
   color: var(--color-white);
   font-family: 'Blender Pro';
+  background-color: var(--color-black);
+
+  .loader {
+    position: absolute;
+    left: 50vw;
+    top: 50vh;
+    transform: translate(-50%, -50%);
+    z-index: 999;
+    text-transform: uppercase;
+    font-size: 20px;
+    margin: 0;
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  > * {
+    transition: opacity 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+  }
+
+  &.waiting > * {
+    opacity: 0;
+    &.loader { opacity: .5; }
+  }
 
   .ui {
     header {

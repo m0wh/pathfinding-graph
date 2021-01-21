@@ -27,7 +27,8 @@ export const citizenColors = [
   colors.yellow, // Vulnerable
   colors.red, // Infected
   colors.red, // Independent
-  colors.superblack // Hacked
+  colors.superblack, // Hacked
+  colors.superblack // Disconnected
 ]
 
 export const citizenAntiColors = [
@@ -36,5 +37,6 @@ export const citizenAntiColors = [
   antiColors.yellow,
   antiColors.red,
   antiColors.red,
+  antiColors.superblack,
   antiColors.superblack
 ]
