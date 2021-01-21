@@ -79,7 +79,8 @@ export class Citizen {
   public step () {
     if (this.device.integrity === 0 && Math.random() < 0.1) return false
 
-    this.walker.step()
+    const moved = this.walker.step()
+    if (moved) return true
 
     if (this.device.integrity === 0) return false
     if (this.device.hacked) return false
@@ -120,6 +121,18 @@ export class Citizen {
     this.device.firmware = Math.round(range(Math.random(), 0, 1, 2303, 3672))
     this.device.security = 0
   }
+
+  public giveToken (type) {
+    if (type === 'security') {
+      this.device.security = Math.min(1, this.device.security * 1.1)
+    } else if (type === 'firmware') {
+      this.device.firmware = currentFirmware
+    } else if (type === 'integrity') {
+      this.device.integrity = Math.min(1, this.device.integrity * 1.1)
+    } else if (type === 'job') {
+      this.identity.score = Math.min(1, this.identity.score * 1.1)
+    }
+  }
 }
 
 export function generateRandomCitizen () {
@@ -129,7 +142,7 @@ export function generateRandomCitizen () {
   return new Citizen({
     firstName: fn,
     lastName: randomFromArray(lastNames),
-    age: Math.round(Math.random() * (Math.random() > 0.7 ? 70 : 120)),
+    age: 15 + Math.round(Math.random() * (Math.random() > 0.7 ? 55 : 95)),
     gender: g,
     sexuality: randomFromArray(sexualities),
     race: randomFromArray(races),

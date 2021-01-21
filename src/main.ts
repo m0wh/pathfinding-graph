@@ -1,8 +1,8 @@
-import { nodes, plazas, size } from './data/simple'
-import { lerp } from './utils'
+import { nodes, plazas } from './data/simple'
+import { lerp, randomFromArray } from './utils'
 import { generateRandomCitizen, randomNode } from './Citizen'
-import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo } from './shapes'
-import { citizenColors, scl, populationSize, colors, citizenAntiColors } from './data/global'
+import { drawCitizen, drawCitizenPath, drawPlaza, drawRoads, drawSelectedInfo, drawTokens } from './shapes'
+import { citizenColors, scl, populationSize, colors, citizenAntiColors, width, height } from './data/global'
 import playSound from './sounds'
 
 window.addEventListener('dblclick', () => {
@@ -14,21 +14,19 @@ window.addEventListener('dblclick', () => {
 Object.entries(colors).forEach(([name, color]) => document.body.style.setProperty(`--color-${name}`, color))
 document.body.style.setProperty('--selected-color', colors.white)
 
-// Parameters
-const width = size[0] * scl
-const height = size[1] * scl
-
 // Main elements
 const wrapper = document.querySelector('#wrapper') as HTMLElement
 const actionsWrapper = document.querySelector('#actions') as HTMLElement
 
 const canvas = {
   map: document.querySelector('#map') as HTMLCanvasElement,
+  tokens: document.querySelector('#tokens') as HTMLCanvasElement,
   people: document.querySelector('#people') as HTMLCanvasElement
 }
 
 const layers = {
   map: canvas.map.getContext('2d'),
+  tokens: canvas.tokens.getContext('2d'),
   people: canvas.people.getContext('2d')
 }
 
@@ -51,6 +49,8 @@ layers.map.lineCap = 'round'
 layers.map.lineJoin = 'round'
 layers.people.lineCap = 'round'
 layers.people.lineJoin = 'round'
+
+const tokens = []
 
 const people = []
 
@@ -116,7 +116,7 @@ let stopLoop = false
 function loop () {
   layers.people.clearRect(0, 0, width * scl, height * scl)
 
-  people.forEach(({ citizen, selected, tracked, btn }) => {
+  people.forEach(({ citizen, selected, tracked, btn }, i) => {
     if (!citizen.walker.isMoving) { // define new objective
       citizen.walker.isMoving = true
       setTimeout(() => {
@@ -128,6 +128,15 @@ function loop () {
     if (changed) {
       btn.style.setProperty('--self-color', citizenColors[citizen.status.code])
       btn.style.setProperty('--self-anti-color', citizenAntiColors[citizen.status.code])
+
+      tokens.forEach((token, i) => {
+        if (citizen.walker.actualNodeIndex === token.node) {
+          citizen.giveToken(token.type)
+          tokens.splice(i, 1)
+          drawTokens(actionsWrapper, tokens)
+          if (!(citizen.device.hacked || citizen.device.integrity === 0)) playSound('token')
+        }
+      })
 
       if (selected) {
         drawSelectedInfo({ citizen, tracked })
@@ -165,4 +174,20 @@ window.addEventListener('click', () => {
   playSound('start')
   document.body.classList.remove('waiting')
   requestAnimationFrame(loop)
+
+  setInterval(() => {
+    if (stopLoop) return
+    if (Math.random() > 0.05 && tokens.length > 10) {
+      tokens.splice(Math.round(Math.random() * (tokens.length - 1)), 1)
+    }
+
+    if (Math.random() > 0.15) {
+      let n = randomNode()
+      while (tokens.filter(t => t.node === n).length !== 0) n = randomNode()
+      const type = randomFromArray(['security', 'firmware', 'integrity', 'job'])
+      tokens.push({ node: n, type })
+
+      drawTokens(actionsWrapper, tokens)
+    }
+  }, 900)
 }, { once: true })

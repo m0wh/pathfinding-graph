@@ -25,10 +25,12 @@ export default class Walker {
   }
 
   public step () {
+    let changed = false
     const segmentDistance = this.graph[this.actualNodeIndex][this.nextNodeIndex] || 0
-    if (segmentDistance === 0) return
+    if (segmentDistance === 0) return false
     this.segmentProgression += 1 / (segmentDistance / this.speed)
     while (this.segmentProgression > 1) {
+      changed = true
       this.segmentProgression = this.segmentProgression - 1
       this.path.shift()
       this.actualNodeIndex = this.nextNodeIndex
@@ -38,6 +40,7 @@ export default class Walker {
         this.isMoving = false
       }
     }
+    return changed
   }
 
   private shortestDistanceNode (distances, visited) {

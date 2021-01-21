@@ -24,7 +24,7 @@ export function drawRoads (ctx, actionsWrapper, people) {
       }
     })
     const btn = document.createElement('button')
-    btn.classList.add('node')
+    btn.classList.add('node', 'node-' + i)
     actionsWrapper.append(btn)
     btn.style.transform = `translate3d(${node.x * scl - 30}px,${node.y * scl - 30}px,0)`
 
@@ -55,6 +55,20 @@ export function drawCitizen (ctx, citizen, x, y) {
   ctx.ellipse(x, y, 20, 20, 0, 0, Math.PI * 2)
   ctx.closePath()
   ctx.fill()
+}
+
+export function drawTokens (wrapper, tokens) {
+  const names = { security: 'security', firmware: 'get_app', integrity: 'build', job: 'work' }
+  document.querySelectorAll('.token-icon').forEach(el => el.remove())
+  tokens.forEach(token => {
+    if (nodes[token.node]) {
+      const icon = document.createElement('i')
+      icon.classList.add('material-icons', 'token-icon')
+      icon.textContent = names[token.type]
+      icon.style.transform = `translate(${Math.round(nodes[token.node].x * scl)}px, ${Math.round(nodes[token.node].y * scl)}px)`
+      wrapper.append(icon)
+    }
+  })
 }
 
 const selectedInfoFields = {

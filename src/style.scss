@@ -41,7 +41,8 @@ body {
         font-size: 20px;
         text-transform: uppercase;
         font-weight: 400;
-        margin: 10px;
+        margin: 16px;
+        line-height: 1;
 
         b {
           font-weight: 800;
@@ -182,6 +183,15 @@ body {
           &:hover {
             border-color: var(--color-white);
           }
+        }
+
+        .token-icon {
+          pointer-events: none;
+          position: absolute;
+          top: -30px;
+          left: -30px;
+          color: var(--color-green);
+          font-size: 60px
         }
       }
     }
